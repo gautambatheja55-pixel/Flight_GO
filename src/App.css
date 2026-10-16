@@ -16,3 +16,23 @@
   border-radius: 50%;
   box-shadow: 0 0 0 5px rgba(192,132,252,0.25);
 }
+.leftbar{
+  position: fixed;
+  top:0;
+  width: 116px;
+  height: 100vh;
+  background: #290c58;
+  border-right: solid rgba(69, 67, 114) ;
+  z-index: 10;
+}
+.bottombar{
+  position: fixed;
+  bottom: 0;
+  width:100%;
+  left:76;
+  height: 76px;
+  background: #290c58;
+  border-top: 14px solid rgba(69, 67, 114);
+  border-top-left-radius:10px;
+  z-index: 0;
+}

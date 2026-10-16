@@ -14,7 +14,9 @@ function App() {
       style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
       center: [78, 20],
       zoom: 2,
-      renderWorldCopies:false
+      renderWorldCopies:false,
+      minZoom:3,
+      pitchWithRotate:false
     });
   
     map.addControl(new NavigationControl(), "top-right");
@@ -53,6 +55,10 @@ function App() {
   };
 });
 
-  return <div ref={mapContainer} className='map-container'/>
+  return <>
+    <div ref={mapContainer} className='map-container'/>
+    <div className="leftbar"></div>
+    <div className="bottombar"></div>
+   </>
 }
 export default App;
