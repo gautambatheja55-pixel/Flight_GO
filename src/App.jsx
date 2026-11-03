@@ -1,12 +1,13 @@
 import "maplibre-gl/dist/maplibre-gl.css"
 import { useEffect, useRef } from 'react'
-import {Marker,Map,NavigationControl,setWorkerUrl} from "maplibre-gl"
+import {Marker,Map,NavigationControl,setWorkerUrl,Popup} from "maplibre-gl"
 import workerUri from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "./App.css"
 
 setWorkerUrl(workerUri);
 function App() {
   const mapContainer = useRef(null);
+  const audio = useRef(new Audio());
   useEffect(() => {
     if (!mapContainer.current) return;
     const map = new Map({
@@ -17,11 +18,95 @@ function App() {
       renderWorldCopies:false,
       minZoom:3,
       pitchWithRotate:false
-    });
+    },[]);
   
     map.addControl(new NavigationControl(), "top-right");
     let active=true;
     let userMarker = null;
+
+    const loadStations = async() => {
+      try{
+        const response = await fetch(
+          "https://de1.api.radio-browser.info/json/stations/search?has_geo_info=true&hidebroken=true&limit=500&order=random"
+        );
+        if (!response.ok){
+          throw new Error("Radio api error ", response.status);
+        }
+        const stations = await response.json();
+
+        if (!active) return;
+
+        let added =0;
+
+        stations.forEach((station) => {
+          if (
+            station.geo_lat == null ||
+            station.geo_long == null 
+          ){
+            return;
+          }
+
+          const latitude=Number(station.geo_lat);
+          const longitude= Number(station.geo_long);
+
+          if (
+            !Number.isFinite(latitude) || !Number.isFinite(longitude) || latitude <-90 || latitude > 90 || longitude < -180 || longitude > 180 ){
+              return;
+            }
+
+            const markerElement = document.createElement("button");
+
+            markerElement.className="station-marker";
+            markerElement.type="button";
+            markerElement.title=station.name || "Radio station";
+            markerElement.setAttribute(
+              "aria-label", `Radio Station : ${station.name || "Unknown"}`
+            );
+
+            const popupContent = document.createElement("div");
+            const stationName = document.createElement("h3");
+            stationName.textContent = station.name || "Unknown station";
+            const stationCountry = document.createElement("p");
+            stationCountry.textContent = station.country || "Unknown country";
+            const playButton = document.createElement("button");
+            playButton.textContent="Play";
+            popupContent.append(stationName,stationCountry,playButton);
+            const popup = new Popup({offset:15}).setDOMContent(popupContent);
+
+            playButton.addEventListener("click",async () => {
+              try{
+                if (audio.current.src === station.url_resolved){
+                  if (audio.current.paused){
+                    await audio.current.play();
+                    playButton.textContent="pause";
+                  } else{
+                    audio.current.pause();
+                    playButton.textContent = "play";
+                    }
+                } else{
+                  audio.current.src=station.url_resolved;
+                  await audio.current.play();
+                  playButton.textContent="pause";
+                }
+              } catch (error){
+                  console.error(error);
+                }
+              });
+
+            new Marker({element: markerElement})
+            .setLngLat([longitude,latitude])
+            .setPopup(popup)
+            .addTo(map);
+          added++;
+        });
+        console.log("radio go added ", added);
+      } catch (error){
+        if (active){
+          console.error(error);
+        }
+      }
+    };
+    map.on ("load",loadStations);
 
     const watchID = navigator.geolocation.watchPosition(
       (position) => {
@@ -58,7 +143,16 @@ function App() {
   return <>
     <div ref={mapContainer} className='map-container'/>
     <div className="leftbar"></div>
-    <div className="bottombar"></div>
+    <div className="bottombar">
+      <div className="player-info">
+        <h3>Nothing Playing</h3>
+        <p>Select a radio station</p>
+      </div>
+
+      <div className="player-controls">
+        <button></button>
+      </div>
+    </div>
    </>
 }
 export default App;

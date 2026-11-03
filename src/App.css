@@ -8,14 +8,6 @@
   height: 100vh;
 }
 
-.location_dot{
-  width: 16px;
-  height: 16px;
-  background-color: red;
-  border: 3px solid white;
-  border-radius: 50%;
-  box-shadow: 0 0 0 5px rgba(192,132,252,0.25);
-}
 .leftbar{
   position: fixed;
   top:0;
@@ -35,4 +27,42 @@
   border-top: 14px solid rgba(69, 67, 114);
   border-top-left-radius:10px;
   z-index: 0;
+}
+
+.player-info h3{
+  margin:0;
+  font-size: 16px;
+}
+
+.player-info p{
+  margin: 5px 0 0;
+  color:#aaa;
+  font-size:13px;
+}
+
+.player-controls button{
+  background: white;
+  color: black;
+  border: none;
+  border-radius:50%;
+  width:38px;
+  height:38px;
+  cursor: pointer;
+}
+.location_dot{
+  width: 16px;
+  height: 16px;
+  background-color: red;
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 0 0 0 5px rgba(192,132,252,0.25);
+}
+
+.station-marker{
+  width: 16px;
+  height: 16px;
+  border: 1px solid white;
+  border-radius: 50%;
+  background: green;
+  cursor: pointer;
 }
