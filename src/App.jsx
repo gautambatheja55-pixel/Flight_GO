@@ -70,6 +70,10 @@ function App() {
             stationCountry.textContent = station.country || "Unknown country";
             const playButton = document.createElement("button");
             playButton.textContent="Play";
+            stationName.className="station-name";
+            stationCountry.className="station-country";
+            playButton.className="play-button";
+            popupContent.className="mini-pop";
             popupContent.append(stationName,stationCountry,playButton);
             const popup = new Popup({offset:15}).setDOMContent(popupContent);
 

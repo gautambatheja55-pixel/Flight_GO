@@ -15,13 +15,13 @@
   height: 100vh;
   background: #290c58;
   border-right: solid rgba(69, 67, 114) ;
-  z-index: 10;
+  z-index: 20;
 }
 .bottombar{
   position: fixed;
   bottom: 0;
   width:100%;
-  left:76;
+  left:76px;
   height: 76px;
   background: #290c58;
   border-top: 14px solid rgba(69, 67, 114);
@@ -29,15 +29,24 @@
   z-index: 0;
 }
 
+.player-info {
+  display: flex;
+  align-items: center;
+  margin-left: 55px;
+  gap: 16px;
+}
+
 .player-info h3{
-  margin:0;
-  font-size: 16px;
+  margin-top: 15px;
+  font-size: 26px;
+  color: #aaa;
+  font-weight: bold;
 }
 
 .player-info p{
-  margin: 5px 0 0;
+  margin-top: 15px;
   color:#aaa;
-  font-size:13px;
+  font-size:20px;
 }
 
 .player-controls button{
@@ -59,10 +68,54 @@
 }
 
 .station-marker{
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+
+.station-marker::before{
+  content:"";
+  display: block;
   width: 16px;
   height: 16px;
   border: 1px solid white;
   border-radius: 50%;
   background: green;
   cursor: pointer;
+}
+
+.mini-pop{
+  background-color: black;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.station-name{
+  color: #37c425;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  margin: 0 0 3px;
+}
+.play-button{
+  border-radius: 20px;
+  border:none;
+  font-size: 20px;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  cursor: pointer;
+}
+.station-country{
+  color: #37c425;
+  margin-top: 3px;
+  font-size: 12px;
+  font-style: italic;
+}
+.maplibregl-popup-content{
+  background:black;
+  border-radius: 20px;
+}
+.maplibregl-popup-close-button{
+  visibility: hidden;
 }
