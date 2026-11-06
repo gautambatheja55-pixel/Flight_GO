@@ -1,5 +1,5 @@
 import "maplibre-gl/dist/maplibre-gl.css"
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {Marker,Map,NavigationControl,setWorkerUrl,Popup} from "maplibre-gl"
 import workerUri from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "./App.css"
@@ -8,7 +8,14 @@ setWorkerUrl(workerUri);
 function App() {
   const mapContainer = useRef(null);
   const audio = useRef(new Audio());
+  const [isPlaying , setIsPlaying] = useState(false);
+  const [currentStation, setCurrentStation] = useState(null);
   useEffect(() => {
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+    audio.current.addEventListener("play",handlePlay);
+    audio.current.addEventListener("pause",handlePause);
+
     if (!mapContainer.current) return;
     const map = new Map({
       container: mapContainer.current, 
@@ -18,7 +25,7 @@ function App() {
       renderWorldCopies:false,
       minZoom:3,
       pitchWithRotate:false
-    },[]);
+    });
   
     map.addControl(new NavigationControl(), "top-right");
     let active=true;
@@ -83,6 +90,7 @@ function App() {
                   if (audio.current.paused){
                     await audio.current.play();
                     playButton.textContent="pause";
+                    setCurrentStation(station);
                   } else{
                     audio.current.pause();
                     playButton.textContent = "play";
@@ -91,6 +99,7 @@ function App() {
                   audio.current.src=station.url_resolved;
                   await audio.current.play();
                   playButton.textContent="pause";
+                  setCurrentStation(station);
                 }
               } catch (error){
                   console.error(error);
@@ -140,17 +149,36 @@ function App() {
     return () => {
       active=false;
       navigator.geolocation.clearWatch(watchID);
+      audio.current.removeEventListener("play", handlePlay);
+      audio.current.removeEventListener("pause",handlePause);
       map.remove();
   };
-});
+},[]);
 
   return <>
     <div ref={mapContainer} className='map-container'/>
     <div className="leftbar"></div>
     <div className="bottombar">
       <div className="player-info">
-        <h3>Nothing Playing</h3>
-        <p>Select a radio station</p>
+        <h3>{currentStation ? currentStation.name : "Nothing Playing"}</h3>
+        <p>{currentStation ? 
+        (<button  className="bootoom_button" onClick={async () =>{
+          try {
+            if (audio.current.paused){
+              await audio.current.play();
+              setIsPlaying(true);
+            } else {
+              audio.current.pause();
+              setIsPlaying(false);
+            }
+          } catch (error){
+            console.error(error);
+          }
+        }}
+        >
+          {isPlaying ? "Pause" : "Play"}
+          </button>
+        ): (<p>Select a radio station</p>)}</p>
       </div>
 
       <div className="player-controls">

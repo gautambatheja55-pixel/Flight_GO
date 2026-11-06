@@ -58,6 +58,7 @@
   height:38px;
   cursor: pointer;
 }
+
 .location_dot{
   width: 16px;
   height: 16px;
@@ -118,4 +119,10 @@
 }
 .maplibregl-popup-close-button{
   visibility: hidden;
+}
+.bootoom_button{
+  border-radius: 25px;
+  border: none;
+  /* margin-top: px; */
+  font-size:20px;
 }
