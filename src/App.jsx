@@ -11,6 +11,8 @@ function App() {
   const [isPlaying , setIsPlaying] = useState(false);
   const [currentStation, setCurrentStation] = useState(null);
   useEffect(() => {
+    let userMarker = null;
+    let countryDetected = false;
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
     audio.current.addEventListener("play",handlePlay);
@@ -29,17 +31,24 @@ function App() {
   
     map.addControl(new NavigationControl(), "top-right");
     let active=true;
-    let userMarker = null;
-
+  
     const loadStations = async() => {
       try{
-        const response = await fetch(
-          "https://de1.api.radio-browser.info/json/stations/search?has_geo_info=true&hidebroken=true&limit=500&order=random"
+        const countryResponse = await fetch (
+          "https://de1.api.radio-browser.info/json/stations/search?countrycode=IN&has_geo_info=true&hidebroken=true&limit=250"
         );
-        if (!response.ok){
-          throw new Error("Radio api error ", response.status);
+        const globalResponse = await fetch(
+          "https://de1.api.radio-browser.info/json/stations/search?has_geo_info=true&hidebroken=true&limit=250&order=random"
+        );
+
+        const globalStations = await globalResponse.json();
+        const countryStations = await countryResponse.json();
+        
+        if (!countryResponse.ok || !globalResponse){
+          throw new Error("API request failed");
         }
-        const stations = await response.json();
+
+        const stations = [...globalStations,...countryStations];
 
         if (!active) return;
 
@@ -121,12 +130,28 @@ function App() {
     };
     map.on ("load",loadStations);
 
-    const watchID = navigator.geolocation.watchPosition(
-      (position) => {
+    const watchID = navigator.geolocation.watchPosition(async (position) => {
         if (!active) return;
 
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
+
+        if (!countryDetected){
+          countryDetected=true;
+          try {
+            const response = await fetch (`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
+            if (!response.ok){
+              throw new Error("Location detection is failing");
+            }
+            const locataionData = await response.json();
+            const countryCode = locataionData.countryCode;
+            console.log(countryCode);
+          } catch (error){
+            countryDetected = false;
+            console.error(error);
+          }
+
+        }
 
         if (!userMarker){
           const dot = document.createElement("div");
@@ -161,7 +186,7 @@ function App() {
     <div className="bottombar">
       <div className="player-info">
         <h3>{currentStation ? currentStation.name : "Nothing Playing"}</h3>
-        <p>{currentStation ? 
+        {currentStation ? 
         (<button  className="bootoom_button" onClick={async () =>{
           try {
             if (audio.current.paused){
@@ -178,7 +203,7 @@ function App() {
         >
           {isPlaying ? "Pause" : "Play"}
           </button>
-        ): (<p>Select a radio station</p>)}</p>
+        ): (<p>Select a radio station</p>)}
       </div>
 
       <div className="player-controls">
