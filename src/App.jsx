@@ -13,6 +13,7 @@ function App() {
   useEffect(() => {
     let userMarker = null;
     let countryDetected = false;
+    let currentMarkerElement = null;
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
     audio.current.addEventListener("play",handlePlay);
@@ -35,16 +36,16 @@ function App() {
     const loadStations = async() => {
       try{
         const countryResponse = await fetch (
-          "https://de1.api.radio-browser.info/json/stations/search?countrycode=IN&has_geo_info=true&hidebroken=true&limit=250"
+          "https://de1.api.radio-browser.info/json/stations/search?countrycode=IN&has_geo_info=true&hidebroken=true&limit=200"
         );
         const globalResponse = await fetch(
-          "https://de1.api.radio-browser.info/json/stations/search?has_geo_info=true&hidebroken=true&limit=250&order=random"
+          "https://de1.api.radio-browser.info/json/stations/search?has_geo_info=true&hidebroken=true&limit=350&order=random"
         );
 
         const globalStations = await globalResponse.json();
         const countryStations = await countryResponse.json();
         
-        if (!countryResponse.ok || !globalResponse){
+        if (!countryResponse.ok || !globalResponse.ok){
           throw new Error("API request failed");
         }
 
@@ -53,7 +54,7 @@ function App() {
         if (!active) return;
 
         let added =0;
-
+        
         stations.forEach((station) => {
           if (
             station.geo_lat == null ||
@@ -100,6 +101,12 @@ function App() {
                     await audio.current.play();
                     playButton.textContent="pause";
                     setCurrentStation(station);
+                    if (currentMarkerElement){
+                      currentMarkerElement.classList.remove("playing");
+                      currentMarkerElement = null;
+                    }
+                    currentMarkerElement = markerElement;
+                    markerElement.classList.add("playing");
                   } else{
                     audio.current.pause();
                     playButton.textContent = "play";
@@ -109,6 +116,12 @@ function App() {
                   await audio.current.play();
                   playButton.textContent="pause";
                   setCurrentStation(station);
+                  if (currentMarkerElement){
+                    currentMarkerElement.classList.remove("playing");
+                    currentMarkerElement = null;
+                  }
+                  currentMarkerElement = markerElement;
+                  markerElement.classList.add("playing");
                 }
               } catch (error){
                   console.error(error);

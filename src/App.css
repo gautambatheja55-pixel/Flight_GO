@@ -84,7 +84,7 @@
   height: 16px;
   border: 1px solid white;
   border-radius: 50%;
-  background: green;
+  background: rgb(16, 148, 16);
   cursor: pointer;
 }
 
@@ -108,7 +108,7 @@
   cursor: pointer;
 }
 .station-country{
-  color: #37c425;
+  color: #00ff88;
   margin-top: 3px;
   font-size: 12px;
   font-style: italic;
@@ -125,4 +125,45 @@
   border: none;
   /* margin-top: px; */
   font-size:20px;
+}
+
+.station-marker.playing::after{
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  top: 50%;
+  left: 50%;
+  border: 2px solid #00ff88;
+  border-radius: 50%;
+  animation: radioPulse 1s ease-out infinite;
+}
+
+.station-marker.playing{
+  animation: corePlus 1.2s ease-in-out infinite;
+}
+
+.station-marker.playing::before{
+  margin:auto;
+}
+
+@keyframes radioPulse {
+  0% {
+    transform: translate(-50%,-50%) scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform:translate(-50%,-50%) scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes corePlus {
+  0%, 100% {
+    filter: drop-shadow(0 0 3px #1f9960);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px #1f793a);
+  }
 }
