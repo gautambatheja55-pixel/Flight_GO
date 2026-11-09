@@ -150,6 +150,24 @@
   cursor: pointer;
 }
 
+#imageone{
+  height:100%;
+  width: 100%;
+  border-radius: 18px;
+}
+
+#imagetwo{
+  height:100%;
+  width: 100%;
+  border-radius: 18px;
+}
+
+#imagethree{
+  height:100%;
+  width: 100%;
+  border-radius: 18px;
+}
+
 .name{
   height:80px;
   margin-bottom: 10px;
@@ -159,6 +177,12 @@
   border-radius: 18px;
   border: none;
   cursor: pointer;
+}
+
+.name img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 #firstbutton::after{

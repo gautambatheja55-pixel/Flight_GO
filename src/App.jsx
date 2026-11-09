@@ -199,15 +199,15 @@ function App() {
       <div className="sidebar-cards">
 
         <button className="sidebar-card" id="firstbutton">
-          <button className="name">IMAGE</button>
+          <div className="name"><img id="imageone" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR03YBucBqu4TclxgpG2aA3Ui8tS08ia6Sn9gDi6G7F6g&s=10"></img></div>
         </button>
 
         <button className="sidebar-card" id="secondbutton">
-          <button className="name">IMAGE</button>
+          <div className="name"><img id="imagetwo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTeN5ovDqaLlo1C5YImRDHTG70pkaFYEWuZrjU5-2r61RXBhBoyRQKKXqp&s=10"></img></div>
         </button>
 
         <button className="sidebar-card" id="thirdbutton">
-          <button className="name">IMAGE</button>
+          <div className="name"><img id="imagethree" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_QcqbTY8oB2rH76_BIZE8ZPZIWudSZ1l4YpiiaFAOyg&s=10"></img></div>
         </button>
 
       </div>
