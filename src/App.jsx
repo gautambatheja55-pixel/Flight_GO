@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import {Marker,Map,NavigationControl,setWorkerUrl,Popup} from "maplibre-gl"
 import workerUri from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "./App.css"
+import VenylRecord from "./assets/Gemini_Generated_Image_rwood9rwood9rwoo.png";
 
 setWorkerUrl(workerUri);
 function App() {
@@ -208,7 +209,7 @@ function App() {
         </button>
 
         <button className="sidebar-card" id="thirdbutton">
-          <div className="name"><img id="imagethree" src="Gemini_Generated_Image_rwood9rwood9rwoo.png"></img></div>
+          <div className="name"><img id="imagethree" src={VenylRecord} alt="Super cool vinyl"></img></div>
         </button>
 
         <div id="recordplayer" className={`name ${isPlaying ? "spinning" : ""}`}><img
