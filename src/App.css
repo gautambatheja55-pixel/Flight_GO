@@ -127,6 +127,62 @@
   font-size:20px;
 }
 
+.sidebar-cards{
+  position:absolute;
+  top:0;
+  height: 100%;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  gap:28px;
+  left: 0;
+  width: 100%;
+  align-items: center;
+}
+
+.sidebar-card{
+  width:90px;
+  height: 125px;
+  border-radius: 15px;
+  transition: transform 0.25s ease;
+  border: none;
+  background-color:rgb(47, 2, 51);
+  cursor: pointer;
+}
+
+.name{
+  height:80px;
+  margin-bottom: 10px;
+  left: 0;
+  width: 80px;
+  bottom: 20px;
+  border-radius: 18px;
+  border: none;
+  cursor: pointer;
+}
+
+#firstbutton::after{
+  content: "Map style";
+  color: white;
+  font-size: 14px;
+}
+
+#secondbutton::after{
+  content:"Favs";
+  color: white;
+  font-size: 14px;
+}
+
+#thirdbutton::after{
+  content: "Sort";
+  color: white;
+  font-size: 14px;
+}
+
+.sidebar-card:hover{
+  transform: rotate(15deg) translateX(8px);
+}
+
 .station-marker.playing::after{
   content: "";
   position: absolute;

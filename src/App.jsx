@@ -195,7 +195,24 @@ function App() {
 
   return <>
     <div ref={mapContainer} className='map-container'/>
-    <div className="leftbar"></div>
+    <div className="leftbar">
+      <div className="sidebar-cards">
+
+        <button className="sidebar-card" id="firstbutton">
+          <button className="name">IMAGE</button>
+        </button>
+
+        <button className="sidebar-card" id="secondbutton">
+          <button className="name">IMAGE</button>
+        </button>
+
+        <button className="sidebar-card" id="thirdbutton">
+          <button className="name">IMAGE</button>
+        </button>
+
+      </div>
+    </div>
+
     <div className="bottombar">
       <div className="player-info">
         <h3>{currentStation ? currentStation.name : "Nothing Playing"}</h3>
