@@ -207,6 +207,26 @@
   transform: rotate(15deg) translateX(8px);
 }
 
+#recordplayer{
+  height: 100px;
+  width: 90px;
+}
+
+#recordplayer img{
+  animation: spin 3s linear infinite;
+  animation-play-state: paused;
+}
+
+#recordplayer.spinning img{
+  animation-play-state: running;
+}
+
+@keyframes spin{
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .station-marker.playing::after{
   content: "";
   position: absolute;

@@ -86,6 +86,7 @@ function App() {
             const stationCountry = document.createElement("p");
             stationCountry.textContent = station.country || "Unknown country";
             const playButton = document.createElement("button");
+
             playButton.textContent="Play";
             stationName.className="station-name";
             stationCountry.className="station-country";
@@ -207,8 +208,11 @@ function App() {
         </button>
 
         <button className="sidebar-card" id="thirdbutton">
-          <div className="name"><img id="imagethree" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_QcqbTY8oB2rH76_BIZE8ZPZIWudSZ1l4YpiiaFAOyg&s=10"></img></div>
+          <div className="name"><img id="imagethree" src="Gemini_Generated_Image_rwood9rwood9rwoo.png"></img></div>
         </button>
+
+        <div id="recordplayer" className={`name ${isPlaying ? "spinning" : ""}`}><img
+        src="https://freepngimg.com/save/78198-vinyl-record/1024x1024"></img></div>
 
       </div>
     </div>
