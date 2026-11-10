@@ -1,6 +1,8 @@
 import "maplibre-gl/dist/maplibre-gl.css"
 import { useEffect, useRef, useState } from 'react'
 import {Marker,Map,NavigationControl,setWorkerUrl,Popup} from "maplibre-gl"
+import {renderToStaticMarkup} from "react-dom/server";
+import {Play,Pause} from "lucide-react";
 import workerUri from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "./App.css"
 import VenylRecord from "./assets/Gemini_Generated_Image_rwood9rwood9rwoo.png";
@@ -87,11 +89,13 @@ function App() {
             const stationCountry = document.createElement("p");
             stationCountry.textContent = station.country || "Unknown country";
             const playButton = document.createElement("button");
+            const getIcon = (Icon) => renderToStaticMarkup(<Icon size={20}/>);
 
-            playButton.textContent="Play";
+            playButton.innerHTML=getIcon(Play);
             stationName.className="station-name";
             stationCountry.className="station-country";
             playButton.className="play-button";
+            playButton.setAttribute("aria-label","Play station");
             popupContent.className="mini-pop";
             popupContent.append(stationName,stationCountry,playButton);
             const popup = new Popup({offset:15}).setDOMContent(popupContent);
@@ -101,7 +105,8 @@ function App() {
                 if (audio.current.src === station.url_resolved){
                   if (audio.current.paused){
                     await audio.current.play();
-                    playButton.textContent="pause";
+                    playButton.innerHTML=getIcon(Pause);
+                    playButton.setAttribute("aria-label", "Pause station");
                     setCurrentStation(station);
                     if (currentMarkerElement){
                       currentMarkerElement.classList.remove("playing");
@@ -111,12 +116,14 @@ function App() {
                     markerElement.classList.add("playing");
                   } else{
                     audio.current.pause();
-                    playButton.textContent = "play";
+                    playButton.innerHTML = getIcon(Play);
+                    playButton.setAttribute("aria-label","Play station");
                     }
                 } else{
                   audio.current.src=station.url_resolved;
                   await audio.current.play();
-                  playButton.textContent="pause";
+                  playButton.innerHTML=getIcon(Pause);
+                  playButton.setAttribute("aria-label", "Pause station");
                   setCurrentStation(station);
                   if (currentMarkerElement){
                     currentMarkerElement.classList.remove("playing");
@@ -236,7 +243,7 @@ function App() {
           }
         }}
         >
-          {isPlaying ? "Pause" : "Play"}
+          {isPlaying ? <Pause size={24}/> : <Play size={22}/>}
           </button>
         ): (<p>Select a radio station</p>)}
       </div>
