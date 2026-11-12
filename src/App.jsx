@@ -8,12 +8,24 @@ import "./App.css"
 import VenylRecord from "./assets/Gemini_Generated_Image_rwood9rwood9rwoo.png";
 
 setWorkerUrl(workerUri);
+
+    const MAP_STYLES ={
+      darkMatter:"https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+      voyager:"https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json",
+      positron:"https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+      
+    }
+
 function App() {
   const mapContainer = useRef(null);
   const audio = useRef(new Audio());
   const firstButtonRef = useRef(null);
   const secondButtonRef = useRef(null);
   const thirdButtonRef = useRef(null);
+  const mapRef = useRef(null);
+  const mapMenuRef = useRef(null);
+  const favMenuRef = useRef(null);
+  const sortMenuRef = useRef(null);
   const [mapMenuTop, setMapMenuTop] = useState(0);
   const [favSecTop, setFavSecTop] = useState(0);
   const [sortSecTop, setSortSecTop] = useState(0);
@@ -32,15 +44,18 @@ function App() {
     audio.current.addEventListener("pause",handlePause);
 
     if (!mapContainer.current) return;
+    const savedStyle = localStorage.getItem("mapStyle");
+
     const map = new Map({
       container: mapContainer.current, 
-      style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+      style: MAP_STYLES[savedStyle] || MAP_STYLES.darkMatter,
       center: [78, 20],
       zoom: 2,
       renderWorldCopies:false,
       minZoom:3,
       pitchWithRotate:false
     });
+    mapRef.current=map;
   
     map.addControl(new NavigationControl(), "top-right");
     let active=true;
@@ -208,8 +223,32 @@ function App() {
       audio.current.removeEventListener("play", handlePlay);
       audio.current.removeEventListener("pause",handlePause);
       map.remove();
+      mapRef.current=null;
   };
 },[]);
+
+  useEffect(()=> {
+    function handleOutsideClick(event){
+      const clickedInsideMenu = mapMenuRef.current?.contains(event.target) || 
+      favMenuRef.current?.contains(event.target) ||
+      sortMenuRef.current?.contains(event.target);
+
+      const clickedSidebarButton = 
+      firstButtonRef.current?.contains(event.target) ||
+      secondButtonRef.current?.contains(event.target) ||
+      thirdButtonRef.current?.contains(event.target);
+
+      if (!clickedInsideMenu && !clickedSidebarButton){
+        setShowMapStyles(false);
+        setShowFavSec(false);
+        setSortSec(false);
+      }
+    }
+      document.addEventListener("mousedown",handleOutsideClick);
+      return () => {
+        document.removeEventListener("mousedown",handleOutsideClick);
+      };
+  },[]);
 
   return <>
     <div ref={mapContainer} className='map-container'/>
@@ -267,24 +306,39 @@ function App() {
       </div>
     </div>
     {showMapStyles && (
-      <div className="map-style-menu" 
+      <div ref={mapMenuRef} className="map-style-menu" 
       style={{top: `${mapMenuTop}px`}}>
         <h3>Map style</h3>
-        <button>this</button>
-        <button>that</button>
-        <button>these</button>
-        <button>those</button>
+
+        <button>3D</button>
+        <button onClick={()=>{
+          mapRef.current.setStyle("https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json")
+          localStorage.setItem("mapStyle","darkMatter");
+        }
+        }>Default</button>
+
+        <button onClick={() =>{
+          mapRef.current.setStyle("https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json");
+          localStorage.setItem("mapStyle","voyager");
+        }
+        }>Voyager</button>
+
+        <button onClick={() => {
+          mapRef.current.setStyle("https://basemaps.cartocdn.com/gl/positron-gl-style/style.json");
+          localStorage.setItem("mapStyle","positron");
+        }
+        }>Positron</button>
       </div>)}
 
     {showFavSec && (
-      <div className="fav-sec" 
+      <div ref={favMenuRef} className="fav-sec" 
       style={{top: `${favSecTop}px`}}>
       <h3>Fav Section</h3>
       </div>
     )}
 
     {showSortSec && (
-      <div className="sort-sec"
+      <div ref={sortMenuRef} className="sort-sec"
       style={{top: `${sortSecTop}px`}}>
         <h3>Sort: </h3>
       </div>
