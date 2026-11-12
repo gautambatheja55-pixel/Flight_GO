@@ -11,8 +11,17 @@ setWorkerUrl(workerUri);
 function App() {
   const mapContainer = useRef(null);
   const audio = useRef(new Audio());
+  const firstButtonRef = useRef(null);
+  const secondButtonRef = useRef(null);
+  const thirdButtonRef = useRef(null);
+  const [mapMenuTop, setMapMenuTop] = useState(0);
+  const [favSecTop, setFavSecTop] = useState(0);
+  const [sortSecTop, setSortSecTop] = useState(0);
   const [isPlaying , setIsPlaying] = useState(false);
   const [currentStation, setCurrentStation] = useState(null);
+  const [showMapStyles, setShowMapStyles] = useState(false);
+  const [showFavSec, setShowFavSec] = useState(false);
+  const [showSortSec, setSortSec] = useState(false);
   useEffect(() => {
     let userMarker = null;
     let countryDetected = false;
@@ -207,15 +216,48 @@ function App() {
     <div className="leftbar">
       <div className="sidebar-cards">
 
-        <button className="sidebar-card" id="firstbutton">
+        <button ref={firstButtonRef} 
+        className="sidebar-card" 
+        id="firstbutton" 
+        onClick={
+          () => {
+            if (!showMapStyles){
+              const rect = firstButtonRef.current.getBoundingClientRect();
+              setMapMenuTop(rect.top + rect.height /2);
+            }
+            setShowMapStyles(!showMapStyles);
+          }
+          }>
           <div className="name"><img id="imageone" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR03YBucBqu4TclxgpG2aA3Ui8tS08ia6Sn9gDi6G7F6g&s=10"></img></div>
         </button>
 
-        <button className="sidebar-card" id="secondbutton">
+        <button
+        ref={secondButtonRef} 
+        className="sidebar-card" 
+        id="secondbutton"
+        onClick={
+          () => {
+            if (!showFavSec){
+              const rect = secondButtonRef.current.getBoundingClientRect();
+              setFavSecTop(rect.top + rect.height /2);
+            }
+            setShowFavSec(!showFavSec);
+          }
+        }>
           <div className="name"><img id="imagetwo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTeN5ovDqaLlo1C5YImRDHTG70pkaFYEWuZrjU5-2r61RXBhBoyRQKKXqp&s=10"></img></div>
         </button>
 
-        <button className="sidebar-card" id="thirdbutton">
+        <button 
+        ref={thirdButtonRef}
+        className="sidebar-card" 
+        id="thirdbutton"
+        onClick={() => {
+          if (!showSortSec){
+            const rec = thirdButtonRef.current.getBoundingClientRect();
+            setSortSecTop(rec.top + rec.height /2);
+          }
+          setSortSec(!showSortSec);
+        }}>
           <div className="name"><img id="imagethree" src={VenylRecord} alt="Super cool vinyl"></img></div>
         </button>
 
@@ -224,6 +266,29 @@ function App() {
 
       </div>
     </div>
+    {showMapStyles && (
+      <div className="map-style-menu" 
+      style={{top: `${mapMenuTop}px`}}>
+        <h3>Map style</h3>
+        <button>this</button>
+        <button>that</button>
+        <button>these</button>
+        <button>those</button>
+      </div>)}
+
+    {showFavSec && (
+      <div className="fav-sec" 
+      style={{top: `${favSecTop}px`}}>
+      <h3>Fav Section</h3>
+      </div>
+    )}
+
+    {showSortSec && (
+      <div className="sort-sec"
+      style={{top: `${sortSecTop}px`}}>
+        <h3>Sort: </h3>
+      </div>
+    )}
 
     <div className="bottombar">
       <div className="player-info">
