@@ -2,7 +2,7 @@ import "maplibre-gl/dist/maplibre-gl.css"
 import { useEffect, useRef, useState } from 'react'
 import {Marker,Map,NavigationControl,setWorkerUrl,Popup} from "maplibre-gl"
 import {renderToStaticMarkup} from "react-dom/server";
-import {Play,Pause} from "lucide-react";
+import {Play,Pause, Heart} from "lucide-react";
 import workerUri from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "./App.css"
 import VenylRecord from "./assets/Gemini_Generated_Image_rwood9rwood9rwoo.png";
@@ -34,6 +34,7 @@ function App() {
   const [showMapStyles, setShowMapStyles] = useState(false);
   const [showFavSec, setShowFavSec] = useState(false);
   const [showSortSec, setSortSec] = useState(false);
+  const [favouriteStations, setFavouriteStations] = useState(() => JSON.parse(localStorage.getItem("favourites") || "[]"));
   useEffect(() => {
     let userMarker = null;
     let countryDetected = false;
@@ -77,7 +78,7 @@ function App() {
         }
 
         const stations = [...globalStations,...countryStations];
-
+        const savedFavourites = new Set( JSON.parse(localStorage.getItem("favourites") || "[]").map(station => station.stationuuid));
         if (!active) return;
 
         let added =0;
@@ -113,23 +114,50 @@ function App() {
             const stationCountry = document.createElement("p");
             stationCountry.textContent = station.country || "Unknown country";
             const playButton = document.createElement("button");
+            const favButton = document.createElement("button");
             const getIcon = (Icon) => renderToStaticMarkup(<Icon size={20}/>);
-
             playButton.innerHTML=getIcon(Play);
+            favButton.innerHTML=getIcon(Heart);
             stationName.className="station-name";
             stationCountry.className="station-country";
             playButton.className="play-button";
+            favButton.className="fav-button";
+            if (savedFavourites.has(station.stationuuid)){
+                favButton.classList.add("favourite");
+            }
             playButton.setAttribute("aria-label","Play station");
             popupContent.className="mini-pop";
-            popupContent.append(stationName,stationCountry,playButton);
+            const buttonContainer = document.createElement("div");
+            buttonContainer.className="popup-buttons";
+            buttonContainer.append(playButton,favButton);
+            popupContent.append(stationName,stationCountry,buttonContainer);
             const popup = new Popup({offset:15}).setDOMContent(popupContent);
+            
+            favButton.addEventListener("click",() => {
+              const stationID = station.stationuuid;
+              let updatedFavourites;
 
+              if (savedFavourites.has(stationID)){
+                savedFavourites.delete(stationID);
+                favButton.classList.remove("favourite");
+                updatedFavourites = JSON.parse(localStorage.getItem("favourites") || "[]").filter(item => item.stationuuid !== stationID);
+              } else {
+                savedFavourites.add(stationID);
+                favButton.classList.add("favourite");
+                updatedFavourites=[...JSON.parse(localStorage.getItem("favourites") || "[]"), station];
+              }
+               localStorage.setItem(
+                "favourites",
+                JSON.stringify([...updatedFavourites])
+              );
+              setFavouriteStations(updatedFavourites);
+            });
             playButton.addEventListener("click",async () => {
               try{
                 if (audio.current.src === station.url_resolved){
                   if (audio.current.paused){
                     await audio.current.play();
-                    playButton.innerHTML=getIcon(Pause);
+                    playButton.innerHTML=getIcon(Pause);           
                     playButton.setAttribute("aria-label", "Pause station");
                     setCurrentStation(station);
                     if (currentMarkerElement){
@@ -333,7 +361,12 @@ function App() {
     {showFavSec && (
       <div ref={favMenuRef} className="fav-sec" 
       style={{top: `${favSecTop}px`}}>
-      <h3>Fav Section</h3>
+        <h3>Fav Section</h3>
+        {favouriteStations.map((station)=> (
+          <div className="fav-station" key={station.stationuuid}>
+          {station.name}  </div>
+        ))}
+      
       </div>
     )}
 

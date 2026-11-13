@@ -100,13 +100,7 @@
   font-family:Verdana, Geneva, Tahoma, sans-serif;
   margin: 0 0 3px;
 }
-.play-button{
-  border-radius: 20px;
-  border:none;
-  font-size: 20px;
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-  cursor: pointer;
-}
+
 .station-country{
   color: #00ff88;
   margin-top: 3px;
@@ -305,8 +299,18 @@
   gap: 20px;
 }
 
-.fav-sec h3{
+.fav-station{
   color: white;
+  padding: 2px;
+  border-bottom: 1px solid;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.fav-sec h3{
+  font-size: 30px;
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .sort-sec{
@@ -349,4 +353,38 @@
 
 .map-style-menu button:hover{
   background-color: #eef3f1;
+}
+
+.fav-button{
+  display: flex;
+  background: transparent;
+  border: none;
+  color: red;
+  cursor: pointer;
+}                 
+
+.fav-button svg {
+  fill:transparent;
+  transition: fill 0.2s ease;
+}
+
+.fav-button.favourite svg{
+  fill: red;
+}
+
+.play-button{
+  display: flex;
+  border-radius: 20px;
+  border:none;
+  font-size: 20px;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  cursor: pointer;
+}
+
+.popup-buttons{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+  width: 90%;
 }
