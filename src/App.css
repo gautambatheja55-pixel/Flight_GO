@@ -17,6 +17,8 @@
   border-right: solid rgba(69, 67, 114) ;
   z-index: 20;
 }
+
+
 .bottombar{
   position: fixed;
   bottom: 0;
@@ -27,6 +29,16 @@
   border-top: 14px solid rgba(69, 67, 114);
   border-top-left-radius:10px;
   z-index: 0;
+  
+}
+
+.visualizer{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
 }
 
 .player-info {
@@ -117,7 +129,6 @@
 .bootoom_button{
   border-radius: 25px;
   border: none;
-  /* margin-top: px; */
   font-size:20px;
 }
 
@@ -387,4 +398,13 @@
   gap: 8px;
   justify-content: space-between;
   width: 90%;
+}
+
+.visualizer{
+  opacity: 0;
+  transition: opacity 600ms ease;;
+}
+
+.visualizer.visible{
+  opacity: 1;
 }

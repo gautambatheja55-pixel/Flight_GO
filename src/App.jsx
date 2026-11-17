@@ -2,7 +2,7 @@ import "maplibre-gl/dist/maplibre-gl.css"
 import { useEffect, useRef, useState } from 'react'
 import {Marker,Map as MapLibreMap,NavigationControl,setWorkerUrl,Popup} from "maplibre-gl"
 import {renderToStaticMarkup} from "react-dom/server";
-import {Play,Pause, Heart} from "lucide-react";
+import {Play,Pause, Heart, Barcode} from "lucide-react";
 import workerUri from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "./App.css"
 import VenylRecord from "./assets/Gemini_Generated_Image_rwood9rwood9rwoo.png";
@@ -27,6 +27,7 @@ function App() {
   const favMenuRef = useRef(null);
   const sortMenuRef = useRef(null);
   const stationMarkersRef = useRef(new Map());
+  const visualizerCanvasRef=useRef(null);
 
   const [mapMenuTop, setMapMenuTop] = useState(0);
   const [favSecTop, setFavSecTop] = useState(0);
@@ -208,6 +209,7 @@ function App() {
     };
     map.on ("load",loadStations);
 
+
     const watchID = navigator.geolocation.watchPosition(async (position) => {
         if (!active) return;
 
@@ -249,6 +251,7 @@ function App() {
         maximumAge:5000,
       }
     );
+
     return () => {
       active=false;
       navigator.geolocation.clearWatch(watchID);
@@ -281,6 +284,52 @@ function App() {
         document.removeEventListener("mousedown",handleOutsideClick);
       };
   },[]);
+
+    useEffect(() => {
+      const canvas= visualizerCanvasRef.current;
+      const ctx = canvas.getContext("2d");
+      let animationId;
+      const draw = (time) => {
+        animationId = requestAnimationFrame(draw);
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        const dpr= window.devicePixelRatio || 1;
+
+        if (canvas.width !== width * dpr ||
+          canvas.height !== height * dpr){
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+          }
+          ctx.setTransform(dpr,0,0,dpr,0,0
+        );
+        ctx.clearRect(0,0,width,height);
+        const barCount=48;
+        const gap=4;
+        const barWidth = (width - (barCount-1) * gap) / barCount;
+        for (let i=0; i<barCount; i++){
+          const wave =Math.sin(time * 0.002  + i * 0.35);
+          const wave2 = Math.sin(time * 0.001  + i * 0.15);
+          const barHeight = (0.2 + (wave + 1) * 0.25 + (wave2 + 1) * 0.1) * height;
+          ctx.fillStyle = "rgba(190,130,255,0.85)";
+          ctx.fillRect(i* (barWidth + gap),
+          height - barHeight,
+        barWidth,barHeight);
+        }
+      };
+      draw();
+      return () => cancelAnimationFrame(animationId);
+    },[]);
+    useEffect(()=> {
+      const player = audio.current;
+      const handlePlay = () => setIsPlaying(true);
+      const handlePause = () => setIsPlaying(false);
+      player.addEventListener("play",handlePlay);
+      player.addEventListener("pause",handlePause);
+      return () => {
+        player.removeEventListener("play",handlePlay);
+        player.removeEventListener("pause",handlePause);
+      };
+    },[]);
 
   return <>
     <div ref={mapContainer} className='map-container'/>
@@ -401,6 +450,7 @@ function App() {
     )}
 
     <div className="bottombar">
+      <canvas ref={visualizerCanvasRef} className={`visualizer ${isPlaying ? "visible" : ""}`}></canvas> 
       <div className="player-info">
         <h3>{currentStation ? currentStation.name : "Nothing Playing"}</h3>
         {currentStation ? 
@@ -411,7 +461,7 @@ function App() {
               setIsPlaying(true);
             } else {
               audio.current.pause();
-              setIsPlaying(false);
+              // setIsPlaying(false);
             }
           } catch (error){
             console.error(error);
