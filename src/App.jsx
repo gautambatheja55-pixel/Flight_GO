@@ -1,6 +1,6 @@
 import "maplibre-gl/dist/maplibre-gl.css"
 import { useEffect, useRef, useState } from 'react'
-import {Marker,Map,NavigationControl,setWorkerUrl,Popup} from "maplibre-gl"
+import {Marker,Map as MapLibreMap,NavigationControl,setWorkerUrl,Popup} from "maplibre-gl"
 import {renderToStaticMarkup} from "react-dom/server";
 import {Play,Pause, Heart} from "lucide-react";
 import workerUri from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
@@ -13,7 +13,7 @@ setWorkerUrl(workerUri);
       darkMatter:"https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
       voyager:"https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json",
       positron:"https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
-      
+
     }
 
 function App() {
@@ -26,6 +26,8 @@ function App() {
   const mapMenuRef = useRef(null);
   const favMenuRef = useRef(null);
   const sortMenuRef = useRef(null);
+  const stationMarkersRef = useRef(new Map());
+
   const [mapMenuTop, setMapMenuTop] = useState(0);
   const [favSecTop, setFavSecTop] = useState(0);
   const [sortSecTop, setSortSecTop] = useState(0);
@@ -35,6 +37,7 @@ function App() {
   const [showFavSec, setShowFavSec] = useState(false);
   const [showSortSec, setSortSec] = useState(false);
   const [favouriteStations, setFavouriteStations] = useState(() => JSON.parse(localStorage.getItem("favourites") || "[]"));
+
   useEffect(() => {
     let userMarker = null;
     let countryDetected = false;
@@ -47,7 +50,7 @@ function App() {
     if (!mapContainer.current) return;
     const savedStyle = localStorage.getItem("mapStyle");
 
-    const map = new Map({
+    const map = new MapLibreMap({
       container: mapContainer.current, 
       style: MAP_STYLES[savedStyle] || MAP_STYLES.darkMatter,
       center: [78, 20],
@@ -64,10 +67,10 @@ function App() {
     const loadStations = async() => {
       try{
         const countryResponse = await fetch (
-          "https://de1.api.radio-browser.info/json/stations/search?countrycode=IN&has_geo_info=true&hidebroken=true&limit=200"
+          "https://de1.api.radio-browser.info/json/stations/search?countrycode=IN&has_geo_info=true&hidebroken=true&limit=300"
         );
         const globalResponse = await fetch(
-          "https://de1.api.radio-browser.info/json/stations/search?has_geo_info=true&hidebroken=true&limit=350&order=random"
+          "https://de1.api.radio-browser.info/json/stations/search?has_geo_info=true&hidebroken=true&limit=450&order=random"
         );
 
         const globalStations = await globalResponse.json();
@@ -189,10 +192,11 @@ function App() {
                 }
               });
 
-            new Marker({element: markerElement})
+            const marker = new Marker({element: markerElement})
             .setLngLat([longitude,latitude])
             .setPopup(popup)
             .addTo(map);
+            stationMarkersRef.current.set(station.stationuuid,marker);
           added++;
         });
         console.log("radio go added ", added);
@@ -363,7 +367,26 @@ function App() {
       style={{top: `${favSecTop}px`}}>
         <h3>Fav Section</h3>
         {favouriteStations.map((station)=> (
-          <div className="fav-station" key={station.stationuuid}>
+          <div className="fav-station" 
+          key={station.stationuuid}
+          onClick={()=> {
+            const markerEntry =[...stationMarkersRef.current.entries()]
+            .find(([id]) => id === station.stationuuid);
+            console.log(markerEntry);
+
+            const marker= stationMarkersRef.current.get(station.stationuuid);
+            if ( !marker || !mapRef.current){
+              alert("Station not found. Try refreshing.")
+              return;
+            }
+              const coordinates = marker.getLngLat();
+              mapRef.current.flyTo({
+                center:coordinates,
+                zoom:8,
+                essential : true
+              });
+              marker.getPopup().addTo(mapRef.current);
+            }}>
           {station.name}  </div>
         ))}
       
