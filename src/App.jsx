@@ -5,6 +5,7 @@ import {renderToStaticMarkup} from "react-dom/server";
 import {Play,Pause, Heart, Barcode} from "lucide-react";
 import workerUri from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "./App.css"
+import { AttributionControl } from "maplibre-gl";
 import VenylRecord from "./assets/Gemini_Generated_Image_rwood9rwood9rwoo.png";
 
 setWorkerUrl(workerUri);
@@ -50,18 +51,23 @@ function App() {
 
     if (!mapContainer.current) return;
     const savedStyle = localStorage.getItem("mapStyle");
-
+   
+    
     const map = new MapLibreMap({
       container: mapContainer.current, 
       style: MAP_STYLES[savedStyle] || MAP_STYLES.darkMatter,
-      center: [78, 20],
-      zoom: 2,
+      center: [78,20],
+      zoom: 2.5,
       renderWorldCopies:false,
-      minZoom:3,
-      pitchWithRotate:false
+      minZoom:2,
+      pitchWithRotate:false,
+      attributionControl:false,
+      
     });
+
+    map.addControl(new AttributionControl({compact:true}),"top-right");
     mapRef.current=map;
-  
+    
     map.addControl(new NavigationControl(), "top-right");
     let active=true;
   
@@ -310,7 +316,7 @@ function App() {
           const wave =Math.sin(time * 0.002  + i * 0.35);
           const wave2 = Math.sin(time * 0.001  + i * 0.15);
           const barHeight = (0.2 + (wave + 1) * 0.25 + (wave2 + 1) * 0.1) * height;
-          ctx.fillStyle = "rgba(190,130,255,0.85)";
+          ctx.fillStyle = "black";
           ctx.fillRect(i* (barWidth + gap),
           height - barHeight,
         barWidth,barHeight);
@@ -461,7 +467,6 @@ function App() {
               setIsPlaying(true);
             } else {
               audio.current.pause();
-              // setIsPlaying(false);
             }
           } catch (error){
             console.error(error);

@@ -13,8 +13,8 @@
   top:0;
   width: 116px;
   height: 100vh;
-  background: #290c58;
-  border-right: solid rgba(69, 67, 114) ;
+  background: #00105B;
+  border-right: solid #C9B5E0 ;
   z-index: 20;
 }
 
@@ -25,8 +25,8 @@
   width:100%;
   left:76px;
   height: 76px;
-  background: #290c58;
-  border-top: 14px solid rgba(69, 67, 114);
+  background: #00105B;
+  border-top: 14px solid #C9B5E0;
   border-top-left-radius:10px;
   z-index: 0;
   
@@ -51,7 +51,7 @@
 .player-info h3{
   margin-top: 15px;
   font-size: 26px;
-  color: #aaa;
+  color: #C9B5E0;
   font-weight: bold;
 }
 
@@ -59,6 +59,12 @@
   margin-top: 15px;
   color:#aaa;
   font-size:20px;
+}
+
+.player-info button {
+  background: transparent;
+  color: #C9B5E0;
+  cursor:pointer;
 }
 
 .player-controls button{
@@ -74,10 +80,10 @@
 .location_dot{
   width: 16px;
   height: 16px;
-  background-color: red;
+  background-color: #6061B6;
   border: 3px solid white;
   border-radius: 50%;
-  box-shadow: 0 0 0 5px rgba(192,132,252,0.25);
+  box-shadow: 0 0 0 5px rgba(136, 252, 132, 0.25);
 }
 
 .station-marker{
@@ -96,7 +102,7 @@
   height: 16px;
   border: 1px solid white;
   border-radius: 50%;
-  background: rgb(16, 148, 16);
+  background: #6061B6;
   cursor: pointer;
 }
 
@@ -108,24 +114,27 @@
   align-items: center;
 }
 .station-name{
-  color: #37c425;
+  color: #C9B5E0;
   font-family:Verdana, Geneva, Tahoma, sans-serif;
   margin: 0 0 3px;
 }
 
 .station-country{
-  color: #00ff88;
+  color: #C9B5E0;
   margin-top: 3px;
   font-size: 12px;
   font-style: italic;
 }
+
 .maplibregl-popup-content{
   background:black;
   border-radius: 20px;
 }
+
 .maplibregl-popup-close-button{
   visibility: hidden;
 }
+
 .bootoom_button{
   border-radius: 25px;
   border: none;
@@ -151,7 +160,7 @@
   border-radius: 15px;
   transition: transform 0.25s ease;
   border: none;
-  background-color:rgb(47, 2, 51);
+  background-color:#6061B6;
   cursor: pointer;
 }
 
@@ -239,7 +248,7 @@
   height: 5px;
   top: 50%;
   left: 50%;
-  border: 2px solid #00ff88;
+  border: 2px solid #C9B5E0;
   border-radius: 50%;
   animation: radioPulse 1s ease-out infinite;
 }
@@ -266,10 +275,10 @@
 
 @keyframes corePlus {
   0%, 100% {
-    filter: drop-shadow(0 0 3px #1f9960);
+    filter: drop-shadow(0 0 3px #C9B5E0);
   }
   50% {
-    filter: drop-shadow(0 0 12px #1f793a);
+    filter: drop-shadow(0 0 12px #C9B5E0);
   }
 }
 
@@ -283,7 +292,7 @@
   overflow-y: auto;
   box-sizing: border-box;
   padding: 12px;
-  background: rgb(47, 2, 51);
+  background: #00105B;
   border: 1px solid #290c58 ;
   border-radius: 16px;
   z-index: 30;
@@ -301,7 +310,7 @@
   overflow-y: auto;
   box-sizing: border-box;
   padding: 12px;
-  background: rgb(47, 2, 51);
+  background: #00105B;
   border: 1px solid #290c58 ;
   border-radius: 16px;
   z-index: 30;
@@ -333,7 +342,7 @@
   overflow-y: auto;
   box-sizing: border-box;
   padding: 12px;
-  background: rgb(47, 2, 51);
+  background: #00105B;
   border: 1px solid #290c58 ;
   border-radius: 16px;
   z-index: 30;
@@ -356,7 +365,7 @@
   padding: 10px;
   border: none;
   border-radius: 7px;
-  background-color: rgb(218, 195, 195);
+  background-color: #C9B5E0;
   color: black;
   cursor: pointer;
   text-align: end;
@@ -370,7 +379,7 @@
   display: flex;
   background: transparent;
   border: none;
-  color: red;
+  color: #C9B5E0;
   cursor: pointer;
 }                 
 
@@ -390,6 +399,8 @@
   font-size: 20px;
   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   cursor: pointer;
+  color: #C9B5E0;
+  background:transparent;
 }
 
 .popup-buttons{
@@ -402,9 +413,9 @@
 
 .visualizer{
   opacity: 0;
-  transition: opacity 600ms ease;;
+  transition: opacity 1s ease;
 }
 
 .visualizer.visible{
-  opacity: 1;
+  opacity: 0.7;
 }
