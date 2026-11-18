@@ -2,7 +2,7 @@ import "maplibre-gl/dist/maplibre-gl.css"
 import { useEffect, useRef, useState } from 'react'
 import {Marker,Map as MapLibreMap,NavigationControl,setWorkerUrl,Popup} from "maplibre-gl"
 import {renderToStaticMarkup} from "react-dom/server";
-import {Play,Pause, Heart, Barcode} from "lucide-react";
+import {Play,Pause, Heart} from "lucide-react";
 import workerUri from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "./App.css"
 import { AttributionControl } from "maplibre-gl";
@@ -13,8 +13,24 @@ setWorkerUrl(workerUri);
     const MAP_STYLES ={
       darkMatter:"https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
       voyager:"https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json",
-      positron:"https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
-
+      positron:"https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+      satellite: {version:8,
+        sources:{
+          satellite:{
+            type:"raster",
+            tiles:["https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2020_3857/default/g/{z}/{y}/{x}.jpg" ],
+            tileSize: 256,
+            attribution:"© EOX, modified Copernicus Sentinel data"
+          }
+        },
+        layers: [
+          {
+            id:"satellite",
+            type:"raster",
+            source:"satellite"
+          }
+        ]
+      }
     }
 
 function App() {
@@ -38,6 +54,7 @@ function App() {
   const [showMapStyles, setShowMapStyles] = useState(false);
   const [showFavSec, setShowFavSec] = useState(false);
   const [showSortSec, setSortSec] = useState(false);
+  const [is3D,setIs3D] = useState(false);
   const [favouriteStations, setFavouriteStations] = useState(() => JSON.parse(localStorage.getItem("favourites") || "[]"));
 
   useEffect(() => {
@@ -397,7 +414,14 @@ function App() {
       style={{top: `${mapMenuTop}px`}}>
         <h3>Map style</h3>
 
-        <button>3D</button>
+        <button onClick={()=>{
+          const map=mapRef.current;
+          if (!map) return;
+          const nextIs3D = !is3D;
+          map.setProjection({type:nextIs3D ? "globe" : "mercator"});
+          setIs3D(nextIs3D);
+        }}>{is3D ? "2D" : "3D"}</button>
+
         <button onClick={()=>{
           mapRef.current.setStyle("https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json")
           localStorage.setItem("mapStyle","darkMatter");
@@ -415,6 +439,13 @@ function App() {
           localStorage.setItem("mapStyle","positron");
         }
         }>Positron</button>
+      
+
+      <button onClick={() => {
+          mapRef.current.setStyle(MAP_STYLES.satellite);
+          localStorage.setItem("mapStyle","satellite");
+        }
+        }>Satellite</button>
       </div>)}
 
     {showFavSec && (
