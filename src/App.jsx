@@ -55,6 +55,8 @@ function App() {
   const [showFavSec, setShowFavSec] = useState(false);
   const [showSortSec, setSortSec] = useState(false);
   const [is3D,setIs3D] = useState(false);
+  const [selectedCountry,setSelectedCountry] = useState("All");
+  const [countries,setCountries] = useState([]);
   const [favouriteStations, setFavouriteStations] = useState(() => JSON.parse(localStorage.getItem("favourites") || "[]"));
 
   useEffect(() => {
@@ -91,7 +93,7 @@ function App() {
     const loadStations = async() => {
       try{
         const countryResponse = await fetch (
-          "https://de1.api.radio-browser.info/json/stations/search?countrycode=IN&has_geo_info=true&hidebroken=true&limit=300"
+          "https://de1.api.radio-browser.info/json/stations/search?countrycode=IN&has_geo_info=true&hidebroken=true&limit=350"
         );
         const globalResponse = await fetch(
           "https://de1.api.radio-browser.info/json/stations/search?has_geo_info=true&hidebroken=true&limit=450&order=random"
@@ -220,10 +222,19 @@ function App() {
             .setLngLat([longitude,latitude])
             .setPopup(popup)
             .addTo(map);
-            stationMarkersRef.current.set(station.stationuuid,marker);
+            stationMarkersRef.current.set(station.stationuuid,{marker,countrycode: station.countrycode});
           added++;
         });
+        console.log("Loaded countries: ",
+          [...new Set(stations.map(station => station.country))]
+        );
         console.log("radio go added ", added);
+        console.log("global api results", globalStations.length);
+        console.log("india api", countryStations.length);
+        console.log("Unique global", new Set(globalStations.map(s => s.stationuuid)).size);
+        console.log("Unique India", new Set(countryStations.map(s=> s.stationuuid)).size);
+        console.log("unique com", new Set(stations.map(s=>s.stationuuid)).size);
+        console.log("first global station", globalStations[0]);
       } catch (error){
         if (active){
           console.error(error);
@@ -342,6 +353,7 @@ function App() {
       draw();
       return () => cancelAnimationFrame(animationId);
     },[]);
+
     useEffect(()=> {
       const player = audio.current;
       const handlePlay = () => setIsPlaying(true);
@@ -353,6 +365,32 @@ function App() {
         player.removeEventListener("pause",handlePause);
       };
     },[]);
+
+    useEffect(() => {
+      const loadCountries = async () => {
+        try {
+          const response = await fetch("https://de1.api.radio-browser.info/json/countries");
+        if (!response.ok){
+          throw new Error ("problem with the countries");
+        }
+        const data = await response.json();
+        setCountries(data);
+      } catch (error){
+        console.error(error);
+      }
+    };
+    loadCountries();
+    },[]);
+
+    useEffect(()=>{
+      stationMarkersRef.current.forEach(({marker,countrycode}) =>{
+        if (selectedCountry === "Countries" || countrycode === selectedCountry){
+          marker.addTo(mapRef.current);
+        } else{
+          marker.remove();
+        }
+      });
+    },[selectedCountry]);
 
   return <>
     <div ref={mapContainer} className='map-container'/>
@@ -482,7 +520,12 @@ function App() {
     {showSortSec && (
       <div ref={sortMenuRef} className="sort-sec"
       style={{top: `${sortSecTop}px`}}>
-        <h3>Sort: </h3>
+        <h3><select value={selectedCountry} onChange={(e) => setSelectedCountry(e.target.value)}>
+          <option value="All">Countries</option>
+          {countries.map(country => (
+            <option key={country.iso_3166_1} value={country.iso_3166_1}>{country.name} </option>
+          ))}
+          </select> </h3>
       </div>
     )}
 

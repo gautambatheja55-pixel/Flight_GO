@@ -212,7 +212,7 @@
 }
 
 #thirdbutton::after{
-  content: "Sort";
+  content: "Filter";
   color: white;
   font-size: 14px;
 }
@@ -351,6 +351,9 @@
   gap: 20px;
 }
 
+.sort-sec select{
+  max-width: 150px;
+}
 .sort-sec h3{
   color: white;
 }
